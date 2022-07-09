@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const { v4: uuidv4 } = require('uuid');
 const { restart } = require('nodemon');
 const { uuid } = require('uuidv4');
+const _ = require('underscore')
 
 const app = express()
 const productos = [
@@ -36,7 +37,7 @@ app.route('/productos')
         newProduct.id = uuidv4()
 
         productos.push(newProduct)
-        res.status(201).json(newProduct)
+        res.status(201).send(newProduct)
     })
 
 // app.get('/productos/:id', (req, res) => {
@@ -50,26 +51,46 @@ app.route('/productos')
 //             : res.status(404).send(`Elptoducto con id: ${req.params.id} No exite`)
 
 //     }
-app.get('/productos/:id', (req, res) => {
-    for (let producto of productos) {
-        if (producto.id === req.params.id) {
-            res.json(producto)
+app.route('/productos/:id')
+    .get((req, res) => {
+        for (let producto of productos) {
+            if (producto.id === req.params.id) {
+                res.json(producto)
+                return
+
+            }
+        }
+        res.status(404).send(`El producto con id: ${req.params.id}No existe`)
+    })
+    .put((req, res) => {
+        let id = req.params.id
+        let remplazoParaProducto = req.body
+        if (!remplazoParaProducto.title || !remplazoParaProducto.precio || !remplazoParaProducto.moneda) {
+            res.status(400).send('Tu producto debe especificar un título, precio y moneda')
             return
 
         }
-    }
-    res.status(404).send(`El producto con id: ${req.params.id}No existe`)
-})
+        let indice = _.findIndex(productos, producto => producto.id == id)
+        if (indice !== -1) {
+            remplazoParaProducto.id = id
+            productos[indice] = remplazoParaProducto
+            res.status(200).json(remplazoParaProducto)
+        } else {
+            res.status(404).send(`El producto con id [${id}] no existe`)
+        }
 
-// res.status(404).send(`El producto con id: ${req.params.id} No exosite`)
 
-//     for (let producto of productos) {
-//         if (producto.id === req.params.id) {
-//             res.json(producto)
-//             return
-//         }
-//     }
-//     res.status(404).send(`El producto con id: ${req.params.id} no existe`)
+    })
+    .delete((req, res) => {
+        let indiceBorrar = _.findIndex(productos, producto => producto.id == req.params.id)
+        if (indiceBorrar === -1) {
+            res.status(404).send(`Producto con id [${req.params.id}] no existe. naDA QUE BORRAR`)
+            return
+        }
+        let borrado = productos.splice(indiceBorrar, 1)
+        res.json(borrado)
+    })
+
 
 
 
