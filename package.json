@@ -14,6 +14,8 @@
     "joi": "^17.6.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.18",
+    "passport": "^0.6.0",
+    "passport-http": "^0.3.0",
     "underscore": "^1.13.4",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.13",
