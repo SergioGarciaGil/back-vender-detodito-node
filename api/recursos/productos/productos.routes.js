@@ -13,7 +13,7 @@ const productosRouter = express.Router()
 
 
 productosRouter.get('/', (req, res) => {
-    console.log(productos)
+
     res.json(productos)
 })
 productosRouter.post('/', validarProducto, (req, res) => {
