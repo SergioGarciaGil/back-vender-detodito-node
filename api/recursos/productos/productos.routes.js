@@ -1,35 +1,16 @@
 const express = require('express');
 const _ = require('underscore')
 const { v4: uuidv4 } = require('uuid');
-const Joi = require('@hapi/joi');
-const { validate } = require('@hapi/joi/lib/types/alternatives');
+const validarProducto = require('./productos.validate')
+
 
 
 const productos = require('../../../dataBase').productos
 const productosRouter = express.Router()
 
-const blueprintProducto = Joi.object().keys({
-    title: Joi.string().max(100).required(),
-    precio: Joi.number().positive().precision(2).required(),
-    moneda: Joi.string().length(3).uppercase()
-})
 
-const validarProducto = (req, res, next) => {
 
-    resultado = Joi.validate(req.body, blueprintProducto, { abortEarly: false, convert: false })
 
-    if (resultado.error === null) {
-        next()
-    } else {
-        let errorDeValidation = resultado.error.details.reduce((acumulador, error) => {
-            return acumulador + `[${error.message}]`
-
-        }, "")
-
-        res.status(400).send(`El producto debe especificar title, precio, moneda. errrores: ${errorDeValidation}`);
-
-    }
-}
 
 productosRouter.get('/', (req, res) => {
     console.log(productos)
@@ -67,7 +48,7 @@ productosRouter.get('/:id', (req, res) => {
     }
     res.status(404).send(`El producto con id: ${req.params.id}No existe`)
 })
-productosRouter.put('/:id', (req, res) => {
+productosRouter.put('/:id', validarProducto, (req, res) => {
     let id = req.params.id
     let remplazoParaProducto = req.body
     if (!remplazoParaProducto.title || !remplazoParaProducto.precio || !remplazoParaProducto.moneda) {
