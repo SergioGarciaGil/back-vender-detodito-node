@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi');
+const log = require('../../../utils/logger')
 
 
 const blueprintProducto = Joi.object({
@@ -18,7 +19,7 @@ module.exports = (req, res, next) => {
             return acumulador + `[${error.message}]`
 
         }, "")
-
+        log.warn(`El producto no pasó la validación`, req.body, errorDeValidation)
         res.status(400).send(`El producto debe especificar title, precio, moneda. errrores: ${errorDeValidation}`);
 
     }
