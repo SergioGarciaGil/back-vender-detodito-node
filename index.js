@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const logger = require('./utils/logger')
 const productosRouter = require('./api/recursos/productos/productos.routes')
+const usuariosRouter = require('./api/recursos/usuarios/usuarios.routes')
 
 const passport = require('passport');
 //Autenticación  de contraseña y username
@@ -33,6 +34,7 @@ app.use(morgan('short', {
 app.use(passport.initialize())// l desimos a express que procese la autenticacion desde http para que entre
 
 app.use('/productos', productosRouter)
+app.use('/usuarios', usuariosRouter)
 
 
 
