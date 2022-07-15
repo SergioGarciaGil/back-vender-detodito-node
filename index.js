@@ -4,21 +4,14 @@ const morgan = require('morgan')
 const logger = require('./utils/logger')
 const productosRouter = require('./api/recursos/productos/productos.routes')
 const usuariosRouter = require('./api/recursos/usuarios/usuarios.routes')
+const auth = require('./api/libs/auth')
 
 const passport = require('passport');
 //Autenticación  de contraseña y username
 const BasicStrategy = require('passport-http').BasicStrategy
 
 
-passport.use(new BasicStrategy(
-    (username, password, donne) => {// lo que hace es verificar si lo que esta llegando ala base de datos es corecta
-        if (username.valueOf() === 'Sergio' && password.valueOf() === 'harcode123') {
-            return donne(null, true)
-        } else {
-            return donne(null, false);
-        }
-    }
-))
+passport.use(new BasicStrategy(auth))
 
 const app = express()
 
@@ -38,7 +31,7 @@ app.use('/usuarios', usuariosRouter)
 
 
 
-app.get('/', passport.authenticate('basic', { session: false }), (req, res,) => {
+app.get('/', passport.authenticate('basic', { session: false }), (req, res,) => {//para ingreasar al home debe registrarse
     res.send('APi de Vende tus corotos')
 })
 
