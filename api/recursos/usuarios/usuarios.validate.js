@@ -18,12 +18,13 @@ let validarUsuario = (req, res, next) => {
         log.info('Producto fallo la validacion', resultado.error.details.map(error => error.message)),
             res.status(400).send("Informacion de usuario no cumpl con los requisitos. El nombre de usuario debe ser alfhanumerico y tner entre 3 y 30 caavteres. La contraseña debe tener entre 6 y 200 caractees. Asegurate de que el email sea válido.")
     }
-    const blueprintPedidoDeLogin = Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required
-    })
+
 
 };
+const blueprintPedidoDeLogin = Joi.object({
+    username: Joi.string().required(),
+    password: Joi.string().required
+})
 let validarPedidoDeLogin = (req, res, next) => {
     const resultado = blueprintPedidoDeLogin.validate(req, res, {
         abortEarly: false,
