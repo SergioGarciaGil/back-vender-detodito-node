@@ -2,6 +2,7 @@ const express = require('express');
 const _ = require('underscore')
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 
 const log = require('../../../utils/logger');
@@ -37,8 +38,36 @@ usuariosRouter.post('/', validarUsuario, (req, res) => {
             username: nuevoUsurio.username,
             email: nuevoUsurio.email,
             password: hashedPassword,
+            id: uuidv4()
         })
         res.status(201).send('Usuario creado exitosamente')
+    })
+})
+usuariosRouter.post('/login', (req, res) => {
+    let usuarioNoAutenticado = req.body
+    let index = _.findIndex(usuarios, usuario => usuario.username === usuarioNoAutenticado.username);
+    // los usuarios no pueden ser procesados por que estamos protegiendo la ruta
+    if (index === -1) {
+        log.info(`Usuario ${usuarioNoAutenticado.username} No existe. No pudo ser autenticado`)
+        res.status(400).send('Credenciales incorrectas el usuario no existe')
+        return;
+    }
+    let hashedPassword = usuarios[index].password// obtenemos la contraseña hasheada y luego comparamos
+    bcrypt.compare(usuarioNoAutenticado.password, hashedPassword, (err, iguales) => {
+        if (iguales) {
+
+            let token = jwt.sign({ id: usuarios[index].id }, 'esto es un secreto', {
+                expiresIn: 86400
+            })
+            log.info(`Usuario ${usuarioNoAutenticado.username} completo la autentificación existosamente`)
+            res.status(200).json({ token })
+
+
+            return
+        } else {
+            log.info(`Usuario ${usuarioNoAutenticado.username} No completó la autenticacion. Contraseña Incorrecta`)
+            res.status(400).send('Credenciales incorrectas. Asegurate que username y contraseña sean correctos')
+        }
     })
 })
 module.exports = usuariosRouter
