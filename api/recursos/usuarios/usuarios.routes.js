@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken')
 
 
 const log = require('../../../utils/logger');
-const validarUsuario = require('./usuarios.validate')
+const validarUsuario = require('./usuarios.validate').validarUsuario
+const validarPedidoDeLogin = require('./usuarios.validate').validarPedidoDeLogin
 const usuarios = require('../../../dataBase').usuarios
 
 const usuariosRouter = express.Router();
@@ -43,7 +44,7 @@ usuariosRouter.post('/', validarUsuario, (req, res) => {
         res.status(201).send('Usuario creado exitosamente')
     })
 })
-usuariosRouter.post('/login', (req, res) => {
+usuariosRouter.post('/login', validarPedidoDeLogin, (req, res) => {
     let usuarioNoAutenticado = req.body
     let index = _.findIndex(usuarios, usuario => usuario.username === usuarioNoAutenticado.username);
     // los usuarios no pueden ser procesados por que estamos protegiendo la ruta
@@ -59,7 +60,7 @@ usuariosRouter.post('/login', (req, res) => {
             let token = jwt.sign({ id: usuarios[index].id }, 'esto es un secreto', {
                 expiresIn: 86400
             })
-            log.info(`Usuario ${usuarioNoAutenticado.username} completo la autentificación existosamente`)
+            log.info(`Usuario ${usuarioNoAutenticado.username} completo la autentificación existosamente.`)
             res.status(200).json({ token })
 
 
