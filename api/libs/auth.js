@@ -6,7 +6,7 @@ const passportJWT = require('passport-jwt')
 
 
 let jwtOptions = {
-    secetOrkey: 'esto es un secreto',
+    secretOrKey: 'esto es un secreto',
     jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken()
 }
 
@@ -18,7 +18,7 @@ module.exports = new passportJWT.Strategy(jwtOptions, (jwtPayload, next) => {
         return;
     } else {
         //no hubo ningun error 
-        log.info(`Usiuario ${usuario[index].username} suministro un token valido. Autenticación completada`)
+        log.info(`Usiuario ${usuarios[index].username} suministro un token valido. Autenticación completada`)
         next(null, {// le clavamos un objeto nuevo si la utenticacion es exitosa
             username: usuarios[index].username,
             id: usuarios[index].id
