@@ -10,7 +10,18 @@ const productos = [
         id: 'ttttt', title: 'Microfono', precio: 500, moneda: 'USD'
     }
 ]
-const usuarios = []
+const usuarios = [
+
+    {
+        "username": "Sergio5",
+        "email": "sergio5@main.co",
+        "password": "$2b$10$kDoeiLtEk.YUJsW57pxM7.pP5NvlXBebFkSlZkaJOT99oeWO4BZ8S",
+        "id": "dbd715e6-f5d5-48fc-8ae3-f17a9327027e"
+    }
+
+]
+
+
 module.exports = {
     productos,
     usuarios

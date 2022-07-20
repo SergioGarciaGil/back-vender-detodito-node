@@ -6,6 +6,7 @@ const productosRouter = require('./api/recursos/productos/productos.routes')
 const usuariosRouter = require('./api/recursos/usuarios/usuarios.routes')
 const authJWT = require('./api/libs/auth')
 
+
 const passport = require('passport');
 //Autenticación  de contraseña y usernamE
 passport.use(authJWT)
@@ -21,16 +22,18 @@ app.use(morgan('short', {
 }))// short es solo un formato de diseño
 
 
+
 app.use(passport.initialize())// l desimos a express que procese la autenticacion desde http para que entre
+
+
 
 app.use('/productos', productosRouter)
 app.use('/usuarios', usuariosRouter)
 
 
-
-app.get('/', passport.authenticate('jwt', { session: false }), (req, res,) => {//para ingreasar al home debe registrarse
-    logger.info('req.user')
-    res.send('APi de Vende tus corotos')
+app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    logger.info(req.user.username)
+    res.send('API DE VENDE TUS COROTOS')
 })
 
 
