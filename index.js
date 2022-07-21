@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser')
+const session = require('express-session');
 const morgan = require('morgan')
 const logger = require('./utils/logger')
 const productosRouter = require('./api/recursos/productos/productos.routes')
@@ -25,6 +26,20 @@ app.use(morgan('short', {
 
 app.use(passport.initialize())// l desimos a express que procese la autenticacion desde http para que entre
 
+
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: 'esto es un secreto'
+}));
+// Passport usa serializeUserla función para conservar los datos del usuario (después de una autenticación exitosa) en la sesión. La función deserializeUserse utiliza para recuperar datos de usuario de la sesión.
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user);
+});
 
 
 app.use('/productos', productosRouter)

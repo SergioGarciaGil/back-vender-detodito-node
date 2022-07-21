@@ -92,7 +92,7 @@ productosRouter.delete('/:id', jwtAutenticate, (req, res) => {
     }
     if (productos[indiceBorrar].dueño !== req.user.username) {
         log.info(`Usuario ${req.user.username} no es dueño del producto con id ${productos[indiceBorrar].id}.
-            dueño real es ${productos[indice].dueño}. request no será procesado`)
+            dueño real es ${productos[indiceBorrar].dueño}. request no será procesado`)
         res.status(400).send(`No eres dueño del producto con id ${productos[indiceBorrar].id} solo puedes borrar productos creados por ti`)
         return
     }
