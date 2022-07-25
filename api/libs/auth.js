@@ -8,7 +8,7 @@ const config = require('./../../config')
 
 
 let jwtOptions = {
-    secretOrKey: config,
+    secretOrKey: config.jwt.secreto,
     jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken()
 }
 

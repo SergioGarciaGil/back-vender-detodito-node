@@ -3,7 +3,7 @@ const log = require('../../../utils/logger')
 
 
 const blueprintProducto = Joi.object({
-    title: Joi.string().max(100).required(),
+    titulo: Joi.string().max(100).required(),
     precio: Joi.number().positive().precision(2).required(),
     moneda: Joi.string().length(3).uppercase()
 })
@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
 
         }, "")
         log.warn(`El producto no pasó la validación`, req.body, errorDeValidation)
-        res.status(400).send(`El producto debe especificar title, precio, moneda. errrores: ${errorDeValidation}`);
+        res.status(400).send(`El producto debe especificar titulo, precio, moneda. errrores: ${errorDeValidation}`);
 
     }
 }

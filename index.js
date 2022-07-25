@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const session = require('express-session');
 const morgan = require('morgan')
 const logger = require('./utils/logger')
+const mongoose = require('mongoose')
+
 const productosRouter = require('./api/recursos/productos/productos.routes')
 const usuariosRouter = require('./api/recursos/usuarios/usuarios.routes')
 const authJWT = require('./api/libs/auth')
@@ -12,6 +14,13 @@ const config = require('./config')
 const passport = require('passport');
 //Autenticación  de contraseña y usernamE
 passport.use(authJWT)
+
+mongoose.connect('mongodb+srv://tienda-mongo:Sergio2772@cluster0.uamer.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connection.on('error', () => {
+    logger.error('Fallo la conexion a mongoDB')
+    process.exit(1)
+
+})
 
 const app = express()
 

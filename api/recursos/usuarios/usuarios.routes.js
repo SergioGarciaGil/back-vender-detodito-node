@@ -58,8 +58,8 @@ usuariosRouter.post('/login', validarPedidoDeLogin, (req, res) => {
     bcrypt.compare(usuarioNoAutenticado.password, hashedPassword, (err, iguales) => {
         if (iguales) {
 
-            let token = jwt.sign({ id: usuarios[index].id }, config.secreto, {
-                expiresIn: config.tiempoDeExpiracion
+            let token = jwt.sign({ id: usuarios[index].id }, config.jwt.secreto, {
+                expiresIn: config.jwt.tiempoDeExpiracion
             })
             log.info(`Usuario ${usuarioNoAutenticado.username} completo la autentificación existosamente.`)
             res.status(200).json({ token })

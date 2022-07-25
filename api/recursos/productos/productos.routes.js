@@ -5,6 +5,8 @@ const passport = require('passport')
 
 const validarProducto = require('./productos.validate')
 const log = require('../../../utils/logger')
+// const Producto = require('./productos.model')
+const productosController = require('./productos.controller')
 
 
 const jwtAutenticate = passport.authenticate('jwt', { sesion: false })
@@ -18,21 +20,25 @@ const productosRouter = express.Router()
 
 
 productosRouter.get('/', (req, res) => {
+    productosController.obtenerProductos()
+        .then(productos => {
+            res.json(productos)
+        })
 
-    res.json(productos)
 })
 productosRouter.post('/', [jwtAutenticate, validarProducto], (req, res) => {
-    // let newProduct = req.body;
-    let newProduct = {
-        ...req.body,
-        id: uuidv4(),
-        dueño: req.user.username
-    }
 
+    // aqui empieza la operacion asincrona para grabar en la base de datos de mongoDB
+    productosController.crearProducto(req.body, req.user.username)
+        .then(producto => {
+            log.info(`producto agregado a la coleccion productos`, producto)
+            res.status(201).json(producto)
+        })
+        .catch(err => {
+            log.error('Producto no pudo ser creado', err)
+            res.status(500).send('Error ocurrió al tratar de crear el producto')
+        })
 
-    productos.push(newProduct)
-    log.info(`producto agregado a la coleccion productos`, newProduct)
-    res.status(201).json(newProduct)
 })
 
 // app.get('/productos/:id', (req, res) => {
