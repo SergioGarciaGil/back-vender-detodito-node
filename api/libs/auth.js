@@ -1,12 +1,14 @@
 const _ = require('underscore')
 const log = require('../../utils/logger')
-const usuarios = require('../../dataBase').usuarios
-const bcrypt = require('bcrypt')
 const passportJWT = require('passport-jwt')
+
+const bcrypt = require('bcrypt')
+const usuarios = require('../../dataBase').usuarios
+const config = require('./../../config')
 
 
 let jwtOptions = {
-    secretOrKey: 'esto es un secreto',
+    secretOrKey: config,
     jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken()
 }
 
