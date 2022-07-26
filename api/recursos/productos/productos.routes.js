@@ -53,14 +53,20 @@ productosRouter.post('/', [jwtAutenticate, validarProducto], (req, res) => {
 
 //     }
 productosRouter.get('/:id', (req, res) => {
-    for (let producto of productos) {
-        if (producto.id === req.params.id) {
-            res.json(producto)
-            return
+    let id = req.params.id;
+    productosController.obtenerProducto(id)
+        .then(producto => {
+            if (!producto) {
+                res.status(404).send(`El producto con id: ${req.params.id}No existe`)
+            } else {
+                res.json(producto)
+            }
+        })
+        .catch(err => {
+            log.error(`Excecion ocurrió al tratar de obtener producto con id [${id}]`, + err)
+            res.status(500).send(`Error ocurrió obteniendo producto con id [${id}]`)
+        })
 
-        }
-    }
-    res.status(404).send(`El producto con id: ${req.params.id}No existe`)
 })
 productosRouter.put('/:id', [jwtAutenticate, validarProducto], (req, res) => {
 

@@ -10,7 +10,11 @@ function crearProducto(producto, dueño) {
 function obtenerProductos() {
     return Producto.find({})
 }
+function obtenerProducto(id) {
+    return Producto.findById(id)
+}
 module.exports = {
     crearProducto,
-    obtenerProductos
+    obtenerProductos,
+    obtenerProducto
 }
