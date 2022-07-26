@@ -17,7 +17,16 @@ const productosRouter = express.Router()
 
 
 
-
+function validarId(req, res, next) {
+    let id = req.params.id
+    // regex = regular expressions
+    if (id.match(/^[a-fA-F0-9]{24}$/) === null) {
+        log.error('El id [${id}] suministrado en el URL no es válido')
+        res.status(400).send(`El id [${id}] suministrado en el URL no es válido`)
+        return
+    }
+    next()
+}
 
 productosRouter.get('/', (req, res) => {
     productosController.obtenerProductos()
@@ -52,7 +61,7 @@ productosRouter.post('/', [jwtAutenticate, validarProducto], (req, res) => {
 //             : res.status(404).send(`Elptoducto con id: ${req.params.id} No exite`)
 
 //     }
-productosRouter.get('/:id', (req, res) => {
+productosRouter.get('/:id', validarId, (req, res) => {
     let id = req.params.id;
     productosController.obtenerProducto(id)
         .then(producto => {
