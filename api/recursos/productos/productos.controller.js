@@ -13,8 +13,16 @@ function obtenerProductos() {
 function obtenerProducto(id) {
     return Producto.findById(id)
 }
+function borrarProducto(id) {
+
+    return Producto.findById(id)
+}
+
+
 module.exports = {
     crearProducto,
     obtenerProductos,
-    obtenerProducto
+    obtenerProducto,
+    borrarProducto
+
 }

@@ -1,6 +1,6 @@
 const express = require('express');
 const _ = require('underscore')
-const { v4: uuidv4 } = require('uuid');
+
 const passport = require('passport')
 
 const validarProducto = require('./productos.validate')
@@ -25,7 +25,8 @@ function validarId(req, res, next) {
         res.status(400).send(`El id [${id}] suministrado en el URL no es válido`)
         return
     }
-    next()
+    next()//nos lleva ala siguiente funcion de la cadena de midelware
+
 }
 
 productosRouter.get('/', (req, res) => {
@@ -104,19 +105,45 @@ productosRouter.put('/:id', [jwtAutenticate, validarProducto], (req, res) => {
 
 
 })
-productosRouter.delete('/:id', jwtAutenticate, (req, res) => {
-    let indiceBorrar = _.findIndex(productos, producto => producto.id == req.params.id)
-    if (indiceBorrar === -1) {
-        log.warn(`Producto con id [${req.params.id} No existe nada que borrar]`)
-        res.status(404).send(`Producto con id [${req.params.id}] no existe. naDA QUE BORRAR`)
+productosRouter.delete('/:id', [jwtAutenticate, validarId], async (req, res) => {
+
+    let id = req.params.id
+    let productoBorrar
+
+    try {
+        productoBorrar = await
+            productosController.obtenerProducto(id)
+    } catch (err) {
+        log.error(`Execpción ocurrió al procesar el borrado de producto con id [${id}]`, err)
+        res.status(500).send(`Error ocurrió borrando producto con id [${id}]`)
         return
     }
-    if (productos[indiceBorrar].dueño !== req.user.username) {
-        log.info(`Usuario ${req.user.username} no es dueño del producto con id ${productos[indiceBorrar].id}.
-            dueño real es ${productos[indiceBorrar].dueño}. request no será procesado`)
-        res.status(400).send(`No eres dueño del producto con id ${productos[indiceBorrar].id} solo puedes borrar productos creados por ti`)
+
+
+
+
+    if (!productoBorrar) {
+        log.info(`Producto con id [${id} No existe nada que borrar]`)
+        res.status(404).send(`Producto con id [${id}] no existe. naDA QUE BORRAR`)
         return
     }
+
+    let usuarioAutenticado = req.user.username
+
+
+    if (productoBorrar.dueño !== usuarioAutenticado) {
+        log.info(`Usuario [${usuarioAutenticado}] no es dueño del producto con id [${id}].
+            dueño real es ${productoBorrar.dueño}}. request no será procesado`)
+        res.status(401).send(`No eres dueño del producto con id [${id}] solo puedes borrar productos creados por ti`)
+        return
+    }
+try {
+    let productoBorrado = await productosController.borrarProducto(id)
+    
+} catch (error) {
+    
+}
+
     let borrado = productos.splice(indiceBorrar, 1)
     res.json(borrado)
 })
