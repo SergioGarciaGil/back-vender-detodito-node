@@ -15,7 +15,7 @@ function obtenerProducto(id) {
 }
 function borrarProducto(id) {
 
-    return Producto.findById(id)
+    return Producto.findByIdAndRemove(id)
 }
 
 

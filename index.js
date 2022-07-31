@@ -17,15 +17,11 @@ passport.use(authJWT)
 
 
 mongoose
-    .connect('mongodb+srv://tienda-mongo:Sergio2772@cluster0.uamer.mongodb.net/?retryWrites=true&w=majority')
+    .connect('mongodb+srv://sergio:Sergio2772@ventadetodito.abirb.mongodb.net/?retryWrites=true&w=majority')
     .then(() => logger.info("connect to MomgoDB Atlas"))
     .catch((err) => logger.error('Fallo la coneccion a mongoDB, error: ' + err));
 
-// mongoose.connection.on('error', () => {
-//     logger.error('Fallo la conexion a mongoDB')
-//     process.exit(1)
 
-// })
 
 const app = express()
 
