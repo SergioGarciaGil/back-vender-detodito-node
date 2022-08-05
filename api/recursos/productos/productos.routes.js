@@ -11,6 +11,8 @@ const productosController = require("./productos.controller");
 const jwtAutenticate = passport.authenticate("jwt", { sesion: false });
 
 const productos = require("../../../dataBase").productos;
+const procesarErrores = require("../../libs/errorHandler").procesarErrores
+
 const productosRouter = express.Router();
 
 function validarId(req, res, next) {
@@ -29,19 +31,19 @@ productosRouter.get("/", (req, res) => {
         res.json(productos);
     });
 });
-productosRouter.post("/", [jwtAutenticate, validarProducto], (req, res) => {
+productosRouter.post("/", [jwtAutenticate, validarProducto], procesarErrores((req, res) => {
     // aqui empieza la operacion asincrona para grabar en la base de datos de mongoDB
-    productosController
+    return productosController
         .crearProducto(req.body, req.user.username)
         .then((producto) => {
-            log.info(`producto agregado a la coleccion productos`, producto);
+            log.info(`producto agregado a la coleccion productos`, producto.toObject());
             res.status(201).json(producto);
         })
-        .catch((err) => {
-            log.error("Producto no pudo ser creado", err);
-            res.status(500).send("Error ocurrió al tratar de crear el producto");
-        });
-});
+    // .catch((err) => {
+    //     log.error("Producto no pudo ser creado", err);
+    //     res.status(500).send("Error ocurrió al tratar de crear el producto");
+    // });
+}));
 
 
 productosRouter.get("/:id", validarId, (req, res) => {
@@ -90,7 +92,7 @@ productosRouter.put("/:id", [jwtAutenticate, validarProducto], async (req, res) 
     productosController.reemplazarProducto(id, req.body, requestUsuario)
         .then(producto => {
             res.json(producto)
-            log.info(`Producto con id [${id} reemplazado con nuevo producto]`, producto)
+            log.info(`Producto con id [${id} reemplazado con nuevo producto]`, producto.toObject())
 
         })
         .catch(err => {
