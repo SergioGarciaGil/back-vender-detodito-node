@@ -4,15 +4,15 @@ function obtenerUsuarios() {
     return Usuario.find({})
 }
 
-function crearUsario(usuario, hashedPassword) {
+function crearUsuario(usuario, hashedPassword) {
     //Esto lo que hace es gabar en mongo
     return new Usuario({
         ...usuario,
         password: hashedPassword
-    }).save
+    }).save()
 }
 function usuarioExiste(username, email) {
-    return newPromise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         Usuario.find().or([{ 'username': username }, { 'email': email }])
             .then(usuarios => {
                 resolve(usuarios.length > 0)
@@ -25,7 +25,8 @@ function usuarioExiste(username, email) {
 
 module.exports = {
     obtenerUsuarios,
-    crearUsario,
-    usuarioExiste
+    crearUsuario,
+    usuarioExiste,
+
 
 }

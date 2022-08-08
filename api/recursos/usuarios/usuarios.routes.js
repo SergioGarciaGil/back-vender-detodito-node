@@ -15,7 +15,7 @@ const usuarioController = require('./usuarios.controller')
 const usuariosRouter = express.Router();
 
 usuariosRouter.get('/', (req, res) => {
-    usuariosController.obtenerUsuarios()
+    usuarioController.obtenerUsuarios()
         .then(usuarios => {
             res.json(usuarios)
         })
@@ -26,34 +26,43 @@ usuariosRouter.get('/', (req, res) => {
 })
 
 usuariosRouter.post('/', validarUsuario, (req, res) => {
-    let nuevoUsurio = req.body;
+    let nuevoUsuario = req.body;
 
-    usuarioController.usuarioExite(nuevoUsurio.username, nuevoUsurio.email)
+    return usuarioController.usuarioExiste(nuevoUsuario.username, nuevoUsuario.email)
         .then(usuarioExiste => {
             if (usuarioExiste) {
-                log.warn(`Email [${nuevoUsurio.email}] o username [${nuevoUsurio.username}] ya existen en la base de datos`)
+                log.warn(`Email [${nuevoUsuario.email}] o username [${nuevoUsuario.username}] ya existen en la base de datos`)
                 res.status(409).send('El email o usuario ya estan asociados con una cuenta')
+                return
             }
-            bcrypt.hash(nuevoUsurio.password, 10, (err, hashedPassword) => {
+            bcrypt.hash(nuevoUsuario.password, 10, (err, hashedPassword) => {
                 if (err) {
-                    log.error('Error ocurrió al tratar de obtener el has de una contraseña', err)
+                    log.error("Error ocurrió al tratar de obtener el hash de una contraseña", err)
+                    res.status(500).send("Error procesado creacion de usuario")
                     return
                 }
-                usuarioController.crearUsario(nuevoUsurio, hashedPassword)
-                    .then(nuevoUsurio => {
-                        res.status(201).send('Usuario creado exitosamente')
+                usuarioController.crearUsuario(nuevoUsuario, hashedPassword)
+                    // res.status(201).send(nuevoUsuario)
+                    .then(nuevoUsuario => {
+                        res.status(201).send(`usuario [${nuevoUsuario}] creado éxitosamente`)
                     })
                     .catch(err => {
-                        log.error('Error al  ocurrió al crear nuevo usuario', err)
-                        res.status(500).send('Error ocurrio al crear nuevo usuario', err)
+                        log.error("Error ocurrió al tratar de crear nuevo usuario")
+                        res.status(500).send("Error ocurrio al tratar de crear nuevo usuario!!", err)
                     })
             })
         })
+
+
         .catch(err => {
-            log.error(`Error ocurrió al tratar de verificar si usuario[${nuevoUsurio.username}] con email [${nuevoUsurio.email}] ya existe.`)
+            log.error(`Error ocurrió al tratar de verificar si usuario[${nuevoUsuario.username}] con email [${nuevoUsuario.email}] ya existe.`)
             res.status(500).send("Error ocurrió al tratar de crear nuevo usuario", err)
         })
-
-
 })
+
+
+
+
+
+
 module.exports = usuariosRouter
