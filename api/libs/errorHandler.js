@@ -1,36 +1,32 @@
+const mongoose = require('mongoose')
 const log = require('../../utils/logger')
 
 exports.procesarErrores = (fn) => {
     return function (req, res, next) {
-        fn(req, res, next).catch((err) => {
-            log.error("dentro de procesarErrores", err)
-        })
+        fn(req, res, next).catch(next)
     }
 }
 
-// let procesarErrores = (fn) => {
-//     return function () {
-//         fn().catch((err) => {
-//             console.log("dentro de procesar errores", err)
-//         })
-//     }
-// }
+exports.procesarErroresDeDB = (err, req, res, next) => {
+    if (err instanceof mongoose.Error || err.name === 'MongoError') {
+        log.error('Ocurrió un error relacionado a mongoose.', err)
+        err.message = "Error relacionado a la base de datos ocurrió inesperadamente. Para ayuda contacte a daniel@gmail.com"
+        err.status = 500
+    }
+    next(err)
+}
 
-// let llamadaAsincrona = function () {
-//     return new Promise((resolve, reject) => {
-//         // setTimeout(resolve, 100) //resuleve en 100 milisegundos
-//         reject(new Error())
-//     })
-// }
-// let funcionQueHaceLlamadaAsincrona = () => {
-//     return llamadaAsincrona()
-//         .then(() => {
-//             console.log("promesa resuelta")
-//         })
-//         .catch((err) => {
-//             console.log("error", err)
-//         })
-// }
-// let llamadaAsincronaProtegida = procesarErrores(funcionQueHaceLlamadaAsincrona)
-// llamadaAsincronaProtegida()
+exports.erroresEnProducción = (err, req, res, next) => {
+    res.status(err.status || 500)
+    res.send({
+        message: err.message
+    })
+}
 
+exports.erroresEnDesarrollo = (err, req, res, next) => {
+    res.status(err.status || 500)
+    res.send({
+        message: err.message,
+        stack: err.stack || ''
+    })
+}

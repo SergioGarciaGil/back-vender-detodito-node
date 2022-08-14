@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 const log = require('../../../utils/logger');
 const validarUsuario = require('./usuarios.validate').validarUsuario
 const validarPedidoDeLogin = require('./usuarios.validate').validarPedidoDeLogin
-
+const usuarios = require('../../../dataBase').usuarios
 const config = require('./../../../config')
 const usuarioController = require('./usuarios.controller')
 
@@ -94,13 +94,12 @@ usuariosRouter.post('/login', [validarPedidoDeLogin, transformarBodyALowerCase],
     }
     if (contraseñaCorrecta) {
 
-        let token = jwt.sign({ id: usuarioRegistrado.id }, config.jwt.secreto, { expiresIn: '1d' })
+        let token = jwt.sign({ id: usuarioRegistrado.id }, config.jwt.secreto, { expiresIn: '1s' })
         log.info(`Usuario ${usuarioNoAutenticado.username} completo autenticación exitosamente.`)
         res.status(200).json({ token })
     } else {
         log.info(`Usuario ${usuarioNoAutenticado.username} no completo autenticación. Contraseña incorrecta`)
-        res.status(200).send("Credenciales incorrectas. Asegurate que el username y contraseña son correctas")
-
+        throw new CredencialesIncorrectas()
     }
 })
 

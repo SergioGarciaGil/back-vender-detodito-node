@@ -9,6 +9,7 @@ const productosRouter = require('./api/recursos/productos/productos.routes')
 const usuariosRouter = require('./api/recursos/usuarios/usuarios.routes')
 const authJWT = require('./api/libs/auth')
 const config = require('./config')
+// const errorHandler = require('./api/libs/errorHandler')
 
 
 const passport = require('passport');
@@ -25,6 +26,15 @@ mongoose
 
 const app = express()
 
+
+
+
+// app.use(errorHandler.procesarErroresDeDB)
+// if (config.ambiente === 'prod') {
+//     app.use(errorHandler.erroresEnProducción)
+// } else {
+//     app.use(errorHandler.erroresEnDesarrollo)
+// }
 
 app.use(bodyParser.json())// body parser se encarga de hacer el proceso en el body o request
 app.use(morgan('short', {
@@ -52,10 +62,8 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
-
 app.use('/productos', productosRouter)
 app.use('/usuarios', usuariosRouter)
-
 
 app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     logger.info(req.user.username)
